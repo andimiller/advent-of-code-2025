@@ -2,7 +2,7 @@ package net.andimiller.aoc25
 package day02
 
 import cats.effect.std.Console
-import cats.effect.{IO, IOApp, Sync}
+import cats.effect.{Clock, IO, IOApp, Async}
 import cats.implicits.*
 import fs2.Stream
 
@@ -15,9 +15,9 @@ object Part2 extends IOApp.Simple:
       .range(2, s.length + 1)
       .filter(i => s.length % i == 0) // if we can evenly divide it up by this
       .map { i =>
-        s.grouped(s.length / i).distinct.size == 1
+        s.grouped(s.length / i).distinct.size == 1 // if every part is the same
       }
-      .exists(identity)
+      .exists(identity) // find the first true, or false
   }
 
   def processRanges(r: Ranges): Long =
@@ -30,11 +30,15 @@ object Part2 extends IOApp.Simple:
       .compile
       .foldMonoid
 
-  def program[F[_]: {Sync, Console, ReadResource}] =
-    ReadResource[F]
-      .readWith("./day02-input.txt")(Ranges.parser)
-      .flatMap { ranges =>
-        val total = processRanges(ranges)
-        Console[F].println(s"total of invalid numbers was $total")
-      }
-      .void
+  def program[F[_]: {Async, Console, ReadResource, Clock}]: F[Unit] =
+      ReadResource[F]
+        .readWith("./day02-input.txt")(Ranges.parser)
+        .flatMap { ranges =>
+          Bench[F].bench(
+            Async[F].delay {processRanges(ranges)},
+            4
+          ).flatTap { total =>
+            Console[F].println(s"total of invalid numbers was $total")
+          }
+        }
+        .void

@@ -9,6 +9,7 @@ lazy val root = (project in file("."))
       "co.fs2" %% "fs2-io" % "3.12.2",
       "org.typelevel" %% "cats-effect-std" % "3.6.3",
       "org.typelevel" %% "cats-parse" % "1.1.0",
+      "com.lihaoyi" %% "sourcecode" % "0.4.4",
       "org.typelevel" %% "munit-cats-effect" % "2.1.0" % Test
     )
   )

@@ -81,7 +81,7 @@ object Part1:
       .flatTap(count => Console[F].println(s"counted $count zeroes"))
       .void
 
-class Part2 extends IOApp.Simple:
+object Part2 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def countTicks(turns: List[Turn]): Int =

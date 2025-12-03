@@ -4,10 +4,10 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.7.4"
 
-lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+lazy val adventOfCode = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .withoutSuffixFor(JVMPlatform)
   .crossType(CrossType.Pure)
-  .in(file("."))
+  .in(file("aoc"))
   .settings(
     name                            := "advent-of-code-2025",
     libraryDependencies ++= List(
@@ -18,10 +18,19 @@ lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       "org.typelevel" %%% "munit-cats-effect" % "2.1.0" % Test
     ),
     nativeConfig ~= {
-      _.withLTO(LTO.full)
-        .withMode(Mode.releaseFull)
+      _.withLTO(LTO.thin)
+        .withMode(Mode.releaseFast)
         .withGC(GC.commix)
     },
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  )
+
+lazy val root = project
+  .in(file("."))
+  .aggregate(adventOfCode.js, adventOfCode.jvm, adventOfCode.native)
+  .settings(
+    publish / skip := true,
+    Compile / sources := Nil,
+    Test / sources := Nil
   )

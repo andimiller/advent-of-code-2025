@@ -14,7 +14,7 @@ object ReadResource:
 
   given fromAsync[F[_]: Async]: ReadResource[F] = new ReadResource[F]:
     override def read(name: String): F[String] =
-      Files[F].readUtf8(Path("./src/main/resources") / name).compile.string
+      Files[F].readUtf8(Path("./aoc/src/main/resources") / name).compile.string
 
     override def readWith[T](name: String)(parser: Parser[T]): F[T] =
       read(name).flatMap { str =>

@@ -18,16 +18,17 @@ object Bench:
 
   given Show[Duration] = Show.show { d =>
     val secs = d.toSeconds.seconds
-    val ms = d.minus(secs).toMillis.milliseconds
-    val ns = d.minus(secs).minus(ms).toNanos.nanoseconds
+    val ms   = d.minus(secs).toMillis.milliseconds
+    val ns   = d.minus(secs).minus(ms).toNanos.nanoseconds
     s"${secs}s ${ms}ms ${ns}ns"
   }
 
-  given fromAsync[F[_]:{Async, Console, Clock}]: Bench[F] = new Bench[F]:
+  given fromAsync[F[_]: {Async, Console, Clock}]: Bench[F] = new Bench[F]:
     override def bench[T](fa: F[T], iterations: Int = 100)(using name: Name): F[T] =
       Stream.eval(Clock[F].timed(fa)).repeatN(iterations).compile.toVector.flatMap { results =>
         val times: Vector[Duration] = results.map(_._1)
-        val total = times.reduce(_ plus _)
-        Console[F].println(show"Bench: ${name.toString} min: ${times.min}, max: ${times.max}, avg:${total / times.size}, iter:$iterations")
+        val total                   = times.reduce(_ plus _)
+        Console[F]
+          .println(show"Bench: ${name.toString} min: ${times.min}, max: ${times.max}, avg:${total / times.size}, iter:$iterations")
           .as(results.head._2)
       }

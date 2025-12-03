@@ -31,14 +31,16 @@ object Part2 extends IOApp.Simple:
       .foldMonoid
 
   def program[F[_]: {Async, Console, ReadResource, Clock}]: F[Unit] =
-      ReadResource[F]
-        .readWith("./day02-input.txt")(Ranges.parser)
-        .flatMap { ranges =>
-          Bench[F].bench(
-            Async[F].delay {processRanges(ranges)},
+    ReadResource[F]
+      .readWith("./day02-input.txt")(Ranges.parser)
+      .flatMap { ranges =>
+        Bench[F]
+          .bench(
+            Async[F].delay { processRanges(ranges) },
             4
-          ).flatTap { total =>
+          )
+          .flatTap { total =>
             Console[F].println(s"total of invalid numbers was $total")
           }
-        }
-        .void
+      }
+      .void

@@ -14,6 +14,3 @@ object Ranges:
   yield (from, to)
 
   val parser: Parser[Ranges] = range.repSep(Parser.char(',')).map(Ranges(_))
-
-
-

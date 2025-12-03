@@ -61,8 +61,8 @@ object Dial:
   def create: Dial     = 50
   def of(i: Int): Dial = cap(i)
 
-object Part1 extends IOApp.Simple:
-  override def run: IO[Unit] = program[IO]
+object Part1:
+  def run: IO[Unit] = program[IO]
 
   val fileParser: Parser[NonEmptyList[Turn]] = Turn.parser.repSep(SharedParsers.newline)
 
@@ -81,7 +81,7 @@ object Part1 extends IOApp.Simple:
       .flatTap(count => Console[F].println(s"counted $count zeroes"))
       .void
 
-object Part2 extends IOApp.Simple:
+class Part2 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def countTicks(turns: List[Turn]): Int =

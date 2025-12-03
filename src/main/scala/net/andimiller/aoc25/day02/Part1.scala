@@ -6,7 +6,7 @@ import cats.effect.{IO, IOApp, Sync}
 import cats.implicits.*
 import fs2.Stream
 
-object Part1 extends IOApp.Simple:
+class Part1 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def isInvalid(i: Long): Boolean = {

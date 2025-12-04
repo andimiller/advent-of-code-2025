@@ -2,7 +2,7 @@ package net.andimiller.aoc25
 package day03
 
 import cats.effect.std.Console
-import cats.effect.{IO, IOApp, Sync}
+import cats.effect.{Clock, IO, IOApp, Async}
 import cats.implicits.*
 
 import scala.collection.mutable
@@ -24,11 +24,12 @@ object Part2 extends IOApp.Simple:
     stack.toVector.reverse.take(solutionLength).mkString.toLong
   }
 
-  def program[F[_]: {Sync, Console, ReadResource}] =
+  def program[F[_]: {Async, Console, ReadResource, Clock}] =
     ReadResource[F]
       .readWith("./day03-input.txt")(BatteryBank.banks)
       .flatMap { banks =>
-        val total = banks.map(findMaxJoltage(_)).combineAll
-        Console[F].println(total)
+        Bench[F].bench(Async[F].blocking { banks.map(findMaxJoltage(_)).combineAll }).flatTap { total =>
+          Console[F].println(total)
+        }
       }
       .void

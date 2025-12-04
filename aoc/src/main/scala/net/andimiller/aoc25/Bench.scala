@@ -20,7 +20,7 @@ object Bench:
     val secs = d.toSeconds.seconds
     val ms   = d.minus(secs).toMillis.milliseconds
     val ns   = d.minus(secs).minus(ms).toNanos.nanoseconds
-    s"${secs}s ${ms}ms ${ns}ns"
+    s"${secs.toSeconds}s ${ms.toMillis}ms ${ns.toNanos}ns"
   }
 
   given fromAsync[F[_]: {Async, Console, Clock}]: Bench[F] = new Bench[F]:

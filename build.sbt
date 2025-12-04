@@ -17,6 +17,7 @@ lazy val adventOfCode = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       "com.lihaoyi"   %%% "sourcecode"        % "0.3.1",
       "org.typelevel" %%% "munit-cats-effect" % "2.1.0" % Test
     ),
+    scalacOptions += "-Xkind-projector",
     nativeConfig ~= {
       _.withLTO(LTO.thin)
         .withMode(Mode.releaseFast)

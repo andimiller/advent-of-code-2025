@@ -17,10 +17,11 @@ object Grid:
       for
         yi <- LazyList.range(y - 1, y + 2)
         xi <- LazyList.range(x - 1, x + 2)
-        r  <- if (yi == y && xi == x)
-                LazyList.empty
-              else
-                LazyList.from(get_(xi, yi))
+        r  <-
+          if (yi == y && xi == x)
+            LazyList.empty
+          else
+            LazyList.from(get_(xi, yi))
       yield r
     inline def zipWithCoordinates: Grid[((Int, Int), T)] =
       g.zipWithIndex.map { (r, y) =>

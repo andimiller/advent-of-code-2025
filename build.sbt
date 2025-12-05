@@ -15,6 +15,7 @@ lazy val adventOfCode = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       "org.typelevel" %%% "cats-effect-std"   % "3.6.3",
       "org.typelevel" %%% "cats-parse"        % "1.0.0",
       "com.lihaoyi"   %%% "sourcecode"        % "0.3.1",
+      "org.typelevel" %%% "spire" % "0.18.0",
       "org.typelevel" %%% "munit-cats-effect" % "2.1.0" % Test
     ),
     scalacOptions += "-Xkind-projector",

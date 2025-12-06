@@ -13,10 +13,18 @@ object Part1 extends IOApp.Simple:
       i.fresh.exists(_.contains(ingredient))
     }
 
-  def program[F[_]: {Async, Console, ReadResource, Clock}]: F[Unit] =
-    ReadResource[F]
-      .readWith("./day05-input.txt")(Inventory.parser)
-      .map(getFreshIds)
-      .map(_.size)
-      .flatTap(Console[F].println(_))
-      .void
+  def program[F[_]: {Async, Console, ReadResource, Clock, Bench}]: F[Unit] =
+    Bench[F].bench(
+      ReadResource[F]
+        .readWith("./day05-input.txt")(Inventory.parser)
+        .flatMap { i =>
+          Bench[F].bench(
+            Async[F].blocking {
+              getFreshIds(i)
+            }
+          )
+        }
+        .map(_.size)
+        .flatTap(Console[F].println(_))
+        .void
+    )

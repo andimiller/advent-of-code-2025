@@ -6,13 +6,15 @@ import cats.effect.std.Console
 import cats.effect.{Async, Clock, IO, IOApp}
 import cats.kernel.Order
 import cats.mtl.Tell
-import cats.syntax.all.{catsSyntaxPartialOrder => _, _}
+import cats.syntax.all.{catsSyntaxPartialOrder as _, *}
 import spire.compat.{integral, ordering}
 import spire.implicits.{LongAlgebra, LongTag}
 import spire.math.Interval
 import spire.math.interval.ValueBound
 import fs2.Stream
+import Bench.syntax.*
 
+import scala.annotation.tailrec
 import scala.math.Ordered.orderingToOrdered
 
 object Part2 extends IOApp.Simple:
@@ -35,6 +37,7 @@ object Part2 extends IOApp.Simple:
       lower -> upper
     }
 
+  @tailrec
   def tryMerge(a: Interval[Long], b: Interval[Long]): Option[Interval[Long]] =
     if (a > b)
       tryMerge(b, a)
@@ -55,13 +58,13 @@ object Part2 extends IOApp.Simple:
   def count(intervals: List[Interval[Long]]): Long =
     intervals.iterator.map(_.size).sum
 
-  def program[F[_]: {Async, Console, ReadResource, Clock}]: F[Unit] =
-    ReadResource[F]
-      .readWith("./day05-input.txt")(Inventory.parser)
-      .flatTap(_ => Console[F].println("parsed"))
-      .map(mergeRanges)
-      .flatTap(_ => Console[F].println("merged"))
-      .map(count)
-      .flatTap(_ => Console[F].println("counted"))
-      .flatTap(Console[F].println(_))
-      .void
+  def program[F[_]: {Async, Console, ReadResource, Clock, Bench}]: F[Unit] =
+    Bench[F].bencher.use { implicit bencher =>
+      ReadResource[F]
+        .readWith("./day05-input.txt")(Inventory.parser)
+        .bench("parse")
+        .flatMap(i => Async[F].blocking { mergeRanges(i) }.bench("merge"))
+        .flatMap(r => Async[F].blocking { count(r) }.bench("count"))
+        .flatTap(Console[F].println(_))
+        .void
+    }

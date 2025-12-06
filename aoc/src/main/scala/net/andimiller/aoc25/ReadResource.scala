@@ -8,6 +8,7 @@ import fs2.io.file.{Files, Path}
 trait ReadResource[F[_]]:
   def read(name: String): F[String]
   def readWith[T](name: String)(parser: Parser[T]): F[T]
+  def readWithPretransform[T](name: String)(f: String => String)(parser: Parser[T]): F[T]
 
 object ReadResource:
   def apply[F[_]](using rr: ReadResource[F]): ReadResource[F] = rr
@@ -20,5 +21,12 @@ object ReadResource:
       read(name).flatMap { str =>
         Async[F].fromEither(
           parser.parseAll(str).leftMap(_.show).leftMap(new Throwable(_))
+        )
+      }
+
+    override def readWithPretransform[T](name: String)(f: String => String)(parser: Parser[T]): F[T] =
+      read(name).flatMap { str =>
+        Async[F].fromEither(
+          parser.parseAll(f(str)).leftMap(_.show).leftMap(new Throwable(_))
         )
       }

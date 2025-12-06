@@ -2,7 +2,7 @@ package net.andimiller.aoc25
 
 import cats.{Monad, Show}
 import cats.implicits.*
-import cats.effect.{Async, Ref, Resource}
+import cats.effect.{Async, Ref, Resource, Sync}
 import cats.effect.kernel.Clock
 import cats.effect.std.Console
 import cats.kernel.Order
@@ -100,3 +100,8 @@ object Bench:
     extension [F[_]: {Bencher, Monad}, T](f: F[T])
       def bench(name: String = "", iterations: Int = 100)(using file: FileName, line: Line): F[T] =
         implicitly[Bencher[F]].bench(f, iterations, name)
+
+    def gym[F[_]: {Bench, Monad, Sync}, T](f: Bencher[F] ?=> F[T]): F[T] =
+      Bench[F].bencher.use { implicit bencher =>
+        f
+      }

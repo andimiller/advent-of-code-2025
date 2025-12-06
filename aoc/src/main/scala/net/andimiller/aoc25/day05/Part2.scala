@@ -59,7 +59,7 @@ object Part2 extends IOApp.Simple:
     intervals.iterator.map(_.size).sum
 
   def program[F[_]: {Async, Console, ReadResource, Clock, Bench}]: F[Unit] =
-    Bench[F].bencher.use { implicit bencher =>
+    gym:
       ReadResource[F]
         .readWith("./day05-input.txt")(Inventory.parser)
         .bench("parse")
@@ -67,4 +67,3 @@ object Part2 extends IOApp.Simple:
         .flatMap(r => Async[F].blocking { count(r) }.bench("count"))
         .flatTap(Console[F].println(_))
         .void
-    }

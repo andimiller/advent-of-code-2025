@@ -15,9 +15,9 @@ object Part1 extends IOApp.Simple:
       case Problem(numbers, op) =>
         op match
           case Operation.Add      =>
-            numbers.reduce(_ + _)
+            numbers.reduce(using _ + _)
           case Operation.Multiply =>
-            numbers.reduce(_ * _)
+            numbers.reduce(using _ * _)
 
   def program[F[_]: {Async, Console, ReadResource, Clock, Bench}]: F[Unit] =
     gym:

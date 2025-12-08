@@ -11,12 +11,14 @@ object Part2 extends IOApp.Simple:
 
   def cascade(b: Board): Map[Int, Long] =
     b.rows.foldLeft(
-      Map.empty[Int, Long]
+      Map.empty[Int, Long] // database of active beam location to number of timelines that converged on this current state
     ) { case (timelineDb, cells) =>
       val indexedCells                              = cells.zipWithIndex
+      // start off any timelines with an S in this row of cells
       val newTimelines: Map[Int, Long]              = indexedCells.collect { case (Cell.Start, idx) =>
         Map(idx -> 1L)
       }.combineAll
+      // for each ongoing timeline, react to this row of cells
       val advancedTimelines: Vector[Map[Int, Long]] = timelineDb.toVector.map { case (state, count) =>
         val splits = indexedCells.collect {
           case (Cell.Splitter, idx) if state == idx =>

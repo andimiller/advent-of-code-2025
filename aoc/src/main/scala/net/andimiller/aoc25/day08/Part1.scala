@@ -11,7 +11,7 @@ object Part1 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def link(gpi: PointDb)(k: Int): Set[Set[Point]] = {
-    val pairs = gpi.findClosestPairs(k).toVector
+    val pairs = gpi.findClosestPairs.take(k).toVector
     pairs.foldLeft(gpi.points.map(Set(_)).toSet) { case (db, ((l, r), _)) =>
       val lp = db.find(_.contains(l)).get
       val rp = db.find(_.contains(r)).get

@@ -6,13 +6,11 @@ import cats.effect.{Async, Clock, IO, IOApp}
 import cats.implicits.*
 import net.andimiller.aoc25.Bench.syntax.*
 
-import java.lang.Math.{abs, pow}
-
 object Part2 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def link(pdb: PointDb): Option[(Point, Point)] = {
-    val pairs                = pdb.findClosestPairs(0)
+    val pairs                = pdb.findClosestPairs
     var pair: (Point, Point) = null
     pairs.foldLeftM(pdb.points.map(Set(_)).toSet) { case (db, ((l, r), _)) =>
       val lp = db.find(_.contains(l)).get

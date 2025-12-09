@@ -12,11 +12,11 @@ case class PointDb(points: Vector[Point]) {
         Math.pow(abs(p1.z - p2.z), 2)
     ).toLong
 
-  def findClosestPairs(k: Int): LazyList[((Point, Point), Long)] = {
+  def findClosestPairs: LazyList[((Point, Point), Long)] =
     def orderedPair(p1: Point, p2: Point): (Point, Point) =
       if (p1.## < p2.##) (p1, p2) else (p2, p1)
 
-    val r = points
+    points
       .combinations(2)
       .map { case Vector(a, b) =>
         orderedPair(a, b)
@@ -29,10 +29,5 @@ case class PointDb(points: Vector[Point]) {
       .toVector
       .sortBy(_._2)
       .to(LazyList)
-
-    if (k == 0)
-      r
-    else r.take(k)
-  }
 
 }

@@ -5,7 +5,6 @@ import cats.effect.std.Console
 import cats.effect.{Async, Clock, IO, IOApp}
 import cats.implicits.*
 import net.andimiller.aoc25.Bench.syntax.*
-import Math.{pow, abs}
 
 object Part1 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]

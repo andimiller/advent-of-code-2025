@@ -10,7 +10,7 @@ import Math.{pow, abs}
 object Part1 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
-  def link(gpi: GridPointIndex)(k: Int): Set[Set[Point]] = {
+  def link(gpi: PointDb)(k: Int): Set[Set[Point]] = {
     val pairs = gpi.findClosestPairs(k).toVector
     pairs.foldLeft(gpi.points.map(Set(_)).toSet) { case (db, ((l, r), _)) =>
       val lp = db.find(_.contains(l)).get
@@ -29,7 +29,7 @@ object Part1 extends IOApp.Simple:
         .readWith("./day08-input.txt")(Point.parserMany)
         .bench("parse")
         .map { points =>
-          new GridPointIndex(points.toList.toVector)
+          new PointDb(points.toList.toVector)
         }
         .map(link(_)(1000))
         .map(calculateAnswer)

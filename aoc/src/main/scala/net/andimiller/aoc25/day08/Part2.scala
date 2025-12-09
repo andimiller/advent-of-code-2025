@@ -11,10 +11,10 @@ import java.lang.Math.{abs, pow}
 object Part2 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
-  def link(gpi: GridPointIndex): Option[(Point, Point)] = {
-    val pairs                = gpi.findClosestPairs(0)
+  def link(pdb: PointDb): Option[(Point, Point)] = {
+    val pairs                = pdb.findClosestPairs(0)
     var pair: (Point, Point) = null
-    pairs.foldLeftM(gpi.points.map(Set(_)).toSet) { case (db, ((l, r), _)) =>
+    pairs.foldLeftM(pdb.points.map(Set(_)).toSet) { case (db, ((l, r), _)) =>
       val lp = db.find(_.contains(l)).get
       val rp = db.find(_.contains(r)).get
 
@@ -41,9 +41,9 @@ object Part2 extends IOApp.Simple:
         .readWith("./day08-input.txt")(Point.parserMany)
         .bench("parse")
         .map { points =>
-          new GridPointIndex(points.toList.toVector)
+          new PointDb(points.toList.toVector)
         }
-        .map(link)
-        .map(calculateAnswer)
+        .flatMap(db => blocking { link(db) }.bench("link", 2))
+        .flatMap(r => blocking { calculateAnswer(r) }.bench("calculate"))
         .flatTap(Console[F].println(_))
         .void

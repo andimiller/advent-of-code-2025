@@ -85,18 +85,23 @@ object Bench:
             override def bench[T](fa: F[T], iterations: Int = 100, name: String = "")(using file: FileName, line: Line): F[T] =
               val n = if (name.nonEmpty) name else s"${file.value}:${line.value}"
 
-              Stream.eval(Clock[F].timed(fa)).repeatN(iterations).compile.toVector.flatMap { results =>
-                ref
-                  .update { db =>
-                    db.appended(n -> results.map(_._1))
-                  }
-                  .as(results.head._2)
-              }
+              Console[F]
+                .print(name) *> Stream.eval(Clock[F].timed(fa) <* Console[F].print(".")).repeatN(iterations).compile.toVector.flatMap {
+                results =>
+                  ref
+                    .update { db =>
+                      db.appended(n -> results.map(_._1))
+                    }
+                    .as(results.head._2)
+              } <* Console[F].println("")
 
             override def report: F[Unit] = ref.get.flatTap(reportDb).void
         }
 
   object syntax:
+    def blocking[F[_]: Async, T](f: => T): F[T] =
+      Async[F].blocking(f)
+
     extension [F[_]: {Bencher, Monad}, T](f: F[T])
       def bench(name: String = "", iterations: Int = 100)(using file: FileName, line: Line): F[T] =
         implicitly[Bencher[F]].bench(f, iterations, name)

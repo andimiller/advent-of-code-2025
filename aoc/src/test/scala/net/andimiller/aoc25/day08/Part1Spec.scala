@@ -11,7 +11,7 @@ class Part1Spec extends CatsEffectSuite {
     ReadResource[IO]
       .readWith("./day08-example.txt")(Point.parserMany)
       .map { points =>
-        new GridPointIndex(points.toList.toVector)
+        new PointDb(points.toList.toVector)
       }
       .map(link(_)(10))
       .map(calculateAnswer)

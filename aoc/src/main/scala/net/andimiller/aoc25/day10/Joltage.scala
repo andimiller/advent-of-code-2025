@@ -31,3 +31,12 @@ object Joltage:
       j.padTo(goal.size, 0).zip(goal).exists { case (c, g) =>
         c > g
       }
+
+    def -(other: Joltage): Joltage =
+      j.zipAll(other, 0, 0).map { case (a, b) => a - b }
+
+    def hasNegative: Boolean =
+      j.exists(_ < 0)      
+      
+    def toVector: Vector[Int] =
+      j

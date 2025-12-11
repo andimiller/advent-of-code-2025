@@ -17,11 +17,11 @@ class Part1Spec extends CatsEffectSuite {
       }
       .assertEquals(
         NonEmptyList.of(
-          Set(4,5),
-          Set(2,3,4),
-          Set(1,2)
+          Set(4, 5),
+          Set(2, 3, 4),
+          Set(1, 2)
         )
       )
   }
-  
+
 }

@@ -10,25 +10,26 @@ import net.andimiller.aoc25.Bench.syntax.*
 
 import scala.collection.BitSet
 
-
 object Part1 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def distance(m: Machine)(buttons: Set[Int]): Int = {
-    val result = buttons.map(m.buttons).foldLeft(BitSet()) {  _ ^ _  }
+    val result = buttons.map(m.buttons).foldLeft(BitSet()) { _ ^ _ }
     (result ^ m.target).size
   }
-  
+
   def solveRaw(m: Machine): Set[Int] = {
     val buttonCount = m.buttons.size
-    val indices = m.buttons.indices.toList
-    (1 to buttonCount).iterator.flatMap { i =>
-      indices.combinations(i).map(_.toSet)
-    }.find { buttons =>
-      distance(m)(buttons) == 0
-    }.get
+    val indices     = m.buttons.indices.toList
+    (1 to buttonCount).iterator
+      .flatMap { i =>
+        indices.combinations(i).map(_.toSet)
+      }
+      .find { buttons =>
+        distance(m)(buttons) == 0
+      }
+      .get
   }
-    
 
   def program[F[_]: {Async, Console, ReadResource, Clock, Bench, Random}]: F[Unit] =
     gym:
@@ -38,7 +39,7 @@ object Part1 extends IOApp.Simple:
         .flatMap { machines =>
           blocking {
             machines.map(solveRaw)
-          }.bench("solve", iterations=2)
+          }.bench("solve", iterations = 2)
         }
         .flatMap { results =>
           blocking {

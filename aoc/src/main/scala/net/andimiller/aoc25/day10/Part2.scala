@@ -9,14 +9,13 @@ import cats.implicits.*
 import net.andimiller.aoc25.Bench.syntax.*
 import spire.math.Rational
 
-
 object Part2 extends IOApp.Simple:
   override def run: IO[Unit] = program[IO]
 
   def minPresses(m: Machine): Int = {
     val buttonJoltages = m.buttons.map(Joltage.fromBitSet).toVector
-    val numButtons = buttonJoltages.length
-    val goalSize = m.joltage.toVector.size
+    val numButtons     = buttonJoltages.length
+    val goalSize       = m.joltage.toVector.size
 
     val matrix = (0 until goalSize).map { pos =>
       (0 until numButtons).map { btn =>
@@ -28,7 +27,7 @@ object Part2 extends IOApp.Simple:
 
     GaussianElimination.minNonNegativeIntegerSolution(matrix, b).fold(0)(_.sum)
   }
-  
+
   def program[F[_]: {Async, Parallel, Console, ReadResource, Clock, Bench, Random}]: F[Unit] =
     gym:
       ReadResource[F]
